@@ -65,11 +65,6 @@ struct ContentView: View {
                         TextField("Amount ", text: $leftAmount)
                             .textFieldStyle(.roundedBorder)
                             .focused($leftTyping)
-                            .onChange(of: leftAmount) {
-                                if leftTyping == true {
-                                    rightAmount = leftCurrency.convert(leftAmount, to: rightCurrency)
-                                }
-                            }
                     }
                     
                     //Equal sign
@@ -103,17 +98,13 @@ struct ContentView: View {
                             .textFieldStyle(.roundedBorder)
                             .multilineTextAlignment(.trailing)
                             .focused($rightTyping)
-                            .onChange(of: rightAmount) {
-                                if rightTyping {
-                                    leftAmount = rightCurrency.convert(rightAmount, to: leftCurrency)
-                                }
-                            }
                             
                     }
                 }
                 .padding()
                 .background(.black.opacity(0.5))
                 .clipShape(.capsule)
+                .keyboardType(.decimalPad)
                 Spacer()
                 
                 //Info button
@@ -130,6 +121,22 @@ struct ContentView: View {
                 }
                             }
 //            .border(.blue)
+        }
+        .onChange(of: leftAmount) {
+            if leftTyping == true {
+                rightAmount = leftCurrency.convert(leftAmount, to: rightCurrency)
+            }
+        }
+        .onChange(of: rightAmount) {
+            if rightTyping {
+                leftAmount = rightCurrency.convert(rightAmount, to: leftCurrency)
+            }
+        }
+        .onChange(of: leftCurrency) {
+            leftAmount = rightCurrency.convert(rightAmount, to: leftCurrency)
+        }
+        .onChange(of: rightCurrency) {
+            rightAmount = leftCurrency.convert(leftAmount, to: rightCurrency)
         }
         .sheet(isPresented: $showExchangeInfo) {
             ExchangeInfo()
